@@ -3,8 +3,9 @@ import socket
 import json
 from threading import Thread
 from datetime import datetime
+from pathlib import Path
 import os
-import mimetypes
+import mimetypes  # Додайте імпорт Path з модуля pathlib
 
 class HTTPRequestHandler(BaseHTTPRequestHandler):
     def do_GET(self):
@@ -40,6 +41,18 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
         self.end_headers()
         with open(f'.{self.path}', 'rb') as file:
             self.wfile.write(file.read())
+    # def send_static(self):
+    #     self.send_response(200)
+    #     mt = mimetypes.guess_type(self.path)
+    #     if mt:
+    #         self.send_header("Content-type", mt[0])
+    #     else:
+    #         self.send_header("Content-type", 'text/plain')
+    #     self.end_headers()
+    #     # Оновіть шлях з модулем pathlib
+    #     file_path = Path('.') / self.path.lstrip('/')
+    #     with open(file_path, 'rb') as file:
+    #         self.wfile.write(file.read())
 
 
 
