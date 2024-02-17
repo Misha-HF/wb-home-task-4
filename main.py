@@ -70,9 +70,20 @@ def socket_server():
 def save_to_json(data):
     data = json.loads(data.decode())
     timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')
-    with open('storage/data.json', 'a') as file:
-        json.dump({timestamp: data}, file, indent=4)
-        file.write('\n')
+    storage_path = 'storage/data.json'
+    if not os.path.exists(storage_path):
+        # Якщо файл ще не існує, створіть новий словник
+        json_data = {timestamp: data}
+    else:
+        # Якщо файл вже існує, завантажте його в словник
+        with open(storage_path, 'r') as file:
+            json_data = json.load(file)
+        # Додайте новий запис до словника
+        json_data[timestamp] = data
+    # Збережіть оновлений словник у файлі JSON
+    with open(storage_path, 'w') as file:
+        json.dump(json_data, file, indent=2)
+
 
 def start_http_server():
     server_address = ('', 3000)
