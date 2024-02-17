@@ -5,7 +5,8 @@ from threading import Thread
 from datetime import datetime
 from pathlib import Path
 import os
-import mimetypes  # Додайте імпорт Path з модуля pathlib
+import mimetypes
+from datetime import datetime
 
 class HTTPRequestHandler(BaseHTTPRequestHandler):
     def do_GET(self):
@@ -41,19 +42,6 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
         self.end_headers()
         with open(f'.{self.path}', 'rb') as file:
             self.wfile.write(file.read())
-    # def send_static(self):
-    #     self.send_response(200)
-    #     mt = mimetypes.guess_type(self.path)
-    #     if mt:
-    #         self.send_header("Content-type", mt[0])
-    #     else:
-    #         self.send_header("Content-type", 'text/plain')
-    #     self.end_headers()
-    #     # Оновіть шлях з модулем pathlib
-    #     file_path = Path('.') / self.path.lstrip('/')
-    #     with open(file_path, 'rb') as file:
-    #         self.wfile.write(file.read())
-
 
 
     def do_POST(self):
@@ -79,10 +67,14 @@ def socket_server():
         while True:
             data, addr = s.recvfrom(1024)
             save_to_json(data)
-
+            
 def save_to_json(data):
     data = json.loads(data.decode())
     timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')
+    # Замінити всі символи "+" на пробіли у тексті повідомлення
+    data['message'] = data['message'].replace('+', ' ')
+    # Замінити всі символи "+" на пробіли у значенні "username"
+    data['username'] = data['username'].replace('+', ' ')
     storage_path = 'storage/data.json'
     if not os.path.exists(storage_path):
         # Якщо файл ще не існує, створіть новий словник
@@ -96,6 +88,8 @@ def save_to_json(data):
     # Збережіть оновлений словник у файлі JSON
     with open(storage_path, 'w') as file:
         json.dump(json_data, file, indent=2)
+
+
 
 
 def start_http_server():
